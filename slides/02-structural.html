@@ -235,7 +235,6 @@
 <li>Which values represent missing data</li>
 <li>Whether the dataset follows expected structural rules</li>
 </ul>
-<div class="fragment">
 <div class="callout callout-note callout-style-simple">
 <div class="callout-body">
 <div class="callout-icon-container">
@@ -259,7 +258,6 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</div>
 </section></section>
 <section>
 <section id="how-to-achieve-structural-interoperability" class="title-slide slide level1 center">
@@ -369,53 +367,34 @@
 <p>Both variables <strong>share dimensions</strong>: the relationship is explicit, not inferred from where values sit in the file.</p>
 </div>
 </section>
-<section id="what-netcdf-does-not-guarantee" class="slide level2 center">
-<h2>What NetCDF does not guarantee</h2>
+<section id="netcdf-guarantees-a-structure-not-a-common-one" class="slide level2 center">
+<h2>NetCDF guarantees a structure, not a common one</h2>
+</section>
+<section id="same-data-different-structure" class="slide level2 center">
+<h2>Same data, different structure</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p><strong>Dataset A</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb2-1"><a href="" aria-label="1"></a>float temp(time, latitude, longitude)</span>
-<span id="cb2-2"><a href="" aria-label="2"></a>temp:units = "K"</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb2-1"><a href="" aria-label="1"></a>dimensions:</span>
+<span id="cb2-2"><a href="" aria-label="2"></a>  time = 24, lat = 180, lon = 360</span>
+<span id="cb2-3"><a href="" aria-label="3"></a>variables:</span>
+<span id="cb2-4"><a href="" aria-label="4"></a>  float time(time)</span>
+<span id="cb2-5"><a href="" aria-label="5"></a>  float lat(lat)</span>
+<span id="cb2-6"><a href="" aria-label="6"></a>  float lon(lon)</span>
+<span id="cb2-7"><a href="" aria-label="7"></a>  float temp(time, lat, lon)</span>
+<span id="cb2-8"><a href="" aria-label="8"></a>  temp:_FillValue = -999.0</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div><div class="column" style="width:50%;">
 <p><strong>Dataset B</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href="" aria-label="1"></a>float T(time, lat, lon)</span>
-<span id="cb3-2"><a href="" aria-label="2"></a>T:units = "degC"</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href="" aria-label="1"></a>dimensions:</span>
+<span id="cb3-2"><a href="" aria-label="2"></a>  lon = 360, lat = 180, t = 24</span>
+<span id="cb3-3"><a href="" aria-label="3"></a>variables:</span>
+<span id="cb3-4"><a href="" aria-label="4"></a>  float T(lon, lat, t)</span>
+<span id="cb3-5"><a href="" aria-label="5"></a>  (no coordinate variables)</span>
+<span id="cb3-6"><a href="" aria-label="6"></a>  (missing values = -999,</span>
+<span id="cb3-7"><a href="" aria-label="7"></a>   not declared)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div></div>
 <div class="fragment">
-<div class="columns">
-<div class="column" style="width:50%;">
-<div title="NetCDF tells software">
-<div class="callout callout-note callout-titled callout-style-simple">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>NetCDF tells software</strong></p>
-</div>
-<div class="callout-content">
-<p>✔ these are variables<br> ✔ type, dimensions, shape<br> ✔ attributes attached to them</p>
-</div>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div title="It does not tell software">
-<div class="callout callout-warning callout-titled callout-style-simple">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>It does not tell software</strong></p>
-</div>
-<div class="callout-content">
-<p>? same physical quantity?<br> ? same units?<br> ? are <code>lat</code> and <code>latitude</code> the same axis?</p>
-</div>
-</div>
-</div>
-</div>
-</div></div>
+<p>Both are <strong>valid NetCDF</strong>. A generic tool can read both, but it cannot tell which axis is which, or what marks missing data, without extra rules.</p>
 </div>
 <div class="fragment">
 <div class="callout callout-tip callout-style-simple">
@@ -424,12 +403,12 @@
 <i class="callout-icon"></i>
 </div>
 <div class="callout-content">
-<p><strong>CF Conventions</strong> add the community rules: standard names, units, coordinates, grid mappings: <code>temp:standard_name = "air_temperature"</code></p>
+<p><strong>NetCDF</strong> is the shared data model. <strong>CF Conventions</strong> are the community contract for using it consistently: coordinate variables, axes, fill values, grid mappings.</p>
 </div>
 </div>
 </div>
 <aside class="notes">
-<p>~1-2 min. Ask: can software combine A and B? Structure is fine, but the meaning (and units) differ. Meaning and units are the topic of the semantic interoperability session later in this workshop. Other names for the same quantity that appear in practice: temperature, air_temp, T.</p>
+<p>~1-2 min. Ask: what can software tell for both files? (Dimensions, variables, types.) What can it not tell? (Which dimension is time, what the order should be, how missing data are marked.) The meaning of the values and units belongs to the semantic session later in the workshop.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
